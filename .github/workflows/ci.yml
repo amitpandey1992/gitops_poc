@@ -11,8 +11,8 @@ permissions:
   packages: read
 
 env:
-  WIF_PROVIDER: ${{ secrets.WIF_PROVIDER || 'projects/project-616fef18-15b8-4d6c-8a2/locations/global/workloadIdentityPools/github-actions-pool/providers/github-taskflow-provider' }}
-  WIF_SA_EMAIL: ${{ secrets.WIF_SA_EMAIL || 'taskflow-sa@project-616fef18-15b8-4d6c-8a2.iam.gserviceaccount.com' }}
+  WIF_PROVIDER: ${{ secrets.TASKFLOW_WIF_PROVIDER || 'projects/project-616fef18-15b8-4d6c-8a2/locations/global/workloadIdentityPools/github-actions-pool/providers/github-taskflow-provider' }}
+  WIF_SA_EMAIL: ${{ secrets.TASKFLOW_WIF_SA_EMAIL || 'taskflow-sa@project-616fef18-15b8-4d6c-8a2.iam.gserviceaccount.com' }}
 
 jobs:
   build-and-push:
