@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: taskflow-pro
+
+  datasource:
+    # Cloud SQL credentials come from Kubernetes Secret (created by Terraform)
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:taskflow_db}
+    username: ${DB_USER:taskflow_user}
+    password: ${DB_PASSWORD:changeme}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate        # Flyway manages schema, Hibernate only validates
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+
+# Actuator — expose metrics for Prometheus (VM: 137.23.52.82)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: taskflow-pro
+      environment: ${SPRING_PROFILES_ACTIVE:local}
+
+# App info
+info:
+  app:
+    name: TaskFlow Pro
+    description: GitOps Demo — Team Task Manager
+    version: "@project.version@"
+
+---
+# Local development profile
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskflow_db
+    username: taskflow_user
+    password: taskflow_local_pass
+  jpa:
+    show-sql: true

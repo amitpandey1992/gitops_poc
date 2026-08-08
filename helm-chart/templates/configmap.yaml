@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "taskflow.fullname" . }}-config
+  labels:
+    {{- include "taskflow.labels" . | nindent 4 }}
+data:
+  DB_HOST: "taskflow-sql" # Or appropriate connection string variable
+  DB_PORT: "5432"
+  DB_NAME: "taskflow_db"
+  DB_USER: "taskflow_user"
+  SERVER_PORT: "8080"

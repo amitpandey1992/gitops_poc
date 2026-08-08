@@ -1,0 +1,9 @@
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+.terraform.lock.hcl
+target/
+*.jar
+.env
+.DS_Store

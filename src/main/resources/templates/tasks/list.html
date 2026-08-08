@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(content=~{::main}, scripts=~{::script})}">
+<head><title>Tasks</title></head>
+<body>
+<main th:fragment="content">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <a th:href="@{/tasks}" th:classappend="${filterStatus == null} ? 'active' : ''" class="filter-btn">All</a>
+            <a th:each="s : ${statuses}"
+               th:href="@{/tasks(status=${s.name()})}"
+               th:classappend="${filterStatus == s.name()} ? 'active' : ''"
+               th:text="${s.label}"
+               class="filter-btn">Status</a>
+        </div>
+        <a th:href="@{/tasks/new}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Add Task
+        </a>
+    </div>
+
+    <!-- Task Grid -->
+    <div class="task-grid" th:if="${not #lists.isEmpty(tasks)}">
+        <div th:each="task : ${tasks}" class="task-card" th:classappend="${task.overdue} ? 'task-overdue' : ''">
+            <div class="task-card-header">
+                <span class="status-badge" th:classappend="${task.status.badgeClass}"
+                      th:text="${task.status.label}">Status</span>
+                <span class="priority-dot" th:classappend="${task.priority.badgeClass}"
+                      th:text="${task.priority}">Priority</span>
+            </div>
+            <h4 class="task-card-title">
+                <a th:href="@{/tasks/{id}/edit(id=${task.id})}" th:text="${task.title}">Task Title</a>
+            </h4>
+            <p class="task-card-desc" th:text="${task.description ?: 'No description'}"
+               th:classappend="${task.description == null} ? 'text-muted fst-italic' : ''"></p>
+            <div class="task-card-footer">
+                <div class="assignee-info" th:if="${task.assignee != null}">
+                    <div class="avatar-sm" th:text="${task.assignee.initials}">AP</div>
+                    <span th:text="${task.assignee.name}">Name</span>
+                </div>
+                <div class="assignee-info" th:unless="${task.assignee != null}">
+                    <span class="text-muted"><i class="bi bi-person-dash"></i> Unassigned</span>
+                </div>
+                <div class="due-date" th:if="${task.dueDate != null}"
+                     th:classappend="${task.overdue} ? 'text-danger' : ''">
+                    <i class="bi bi-calendar3"></i>
+                    <span th:text="${#temporals.format(task.dueDate, 'dd MMM')}">Due</span>
+                </div>
+            </div>
+            <div class="task-card-actions">
+                <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-ghost">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-sm btn-ghost btn-danger-ghost"
+                            onclick="return confirm('Delete this task?')">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(tasks)}" class="empty-state">
+        <i class="bi bi-clipboard2-x empty-icon"></i>
+        <h3>No tasks found</h3>
+        <p class="text-muted">Get started by creating your first task</p>
+        <a th:href="@{/tasks/new}" class="btn btn-primary mt-3">
+            <i class="bi bi-plus-lg me-2"></i>Create Task
+        </a>
+    </div>
+</main>
+<script th:fragment="scripts"></script>
+</body>
+</html>

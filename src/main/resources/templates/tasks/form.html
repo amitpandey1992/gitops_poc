@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(content=~{::main}, scripts=~{::script})}">
+<head><title>Task Form</title></head>
+<body>
+<main th:fragment="content">
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-card-header">
+                <h2 th:text="${editMode} ? 'Edit Task' : 'Create New Task'">Task Form</h2>
+                <a th:href="@{/tasks}" class="btn btn-ghost">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                </a>
+            </div>
+
+            <form th:action="${editMode} ? @{/tasks/{id}/edit(id=${task.id})} : @{/tasks/new}"
+                  th:object="${task}" method="post" novalidate>
+
+                <!-- Title -->
+                <div class="form-group">
+                    <label class="form-label">Task Title <span class="text-danger">*</span></label>
+                    <input type="text" th:field="*{title}" class="form-control"
+                           th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
+                           placeholder="What needs to be done?"/>
+                    <div th:if="${#fields.hasErrors('title')}" class="invalid-feedback"
+                         th:errors="*{title}">Error</div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea th:field="*{description}" class="form-control" rows="3"
+                              placeholder="Add more details..."></textarea>
+                </div>
+
+                <!-- Status + Priority Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select th:field="*{status}" class="form-select">
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}">Status</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select th:field="*{priority}" class="form-select">
+                            <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}">Priority</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Assignee + Due Date Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Assignee</label>
+                        <select name="assigneeId" class="form-select">
+                            <option value="">— Unassigned —</option>
+                            <option th:each="m : ${members}"
+                                    th:value="${m.id}"
+                                    th:text="${m.name + ' (' + m.role + ')'}"
+                                    th:selected="${task.assignee != null and task.assignee.id == m.id}">Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" th:field="*{dueDate}" class="form-control"/>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="form-actions">
+                    <a th:href="@{/tasks}" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2 me-1"></i>
+                        <span th:text="${editMode} ? 'Update Task' : 'Create Task'">Save</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<script th:fragment="scripts"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(content=~{::main}, scripts=~{::script})}">
+<head><title>Team</title></head>
+<body>
+<main th:fragment="content">
+    <div class="team-grid">
+        <div th:each="member : ${members}" class="member-card">
+            <div class="member-avatar" th:text="${member.initials}">AP</div>
+            <div class="member-info">
+                <h4 class="member-name" th:text="${member.name}">Name</h4>
+                <span class="member-role" th:text="${member.role}">Role</span>
+                <div class="member-email">
+                    <i class="bi bi-envelope"></i>
+                    <span th:text="${member.email}">email</span>
+                </div>
+            </div>
+            <div class="member-stats">
+                <div class="member-stat">
+                    <span class="stat-num" th:text="${member.tasks != null ? #lists.size(member.tasks) : 0}">0</span>
+                    <span class="stat-lbl">Tasks</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script th:fragment="scripts"></script>
+</body>
+</html>

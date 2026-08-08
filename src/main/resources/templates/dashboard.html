@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(content=~{::main}, scripts=~{::script})}">
+<head><title>Dashboard</title></head>
+<body>
+<main th:fragment="content">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card stat-total">
+            <div class="stat-icon"><i class="bi bi-list-task"></i></div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${total}">0</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+        </div>
+        <div class="stat-card stat-inprogress">
+            <div class="stat-icon"><i class="bi bi-arrow-clockwise"></i></div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${inProgress}">0</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+        </div>
+        <div class="stat-card stat-done">
+            <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${done}">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+        <div class="stat-card stat-team">
+            <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${teamSize}">0</div>
+                <div class="stat-label">Team Members</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title"><i class="bi bi-bar-chart-fill me-2"></i>Tasks by Status</h3>
+            </div>
+            <div class="chart-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title"><i class="bi bi-pie-chart-fill me-2"></i>Priority Breakdown</h3>
+            </div>
+            <div class="chart-body">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3 class="section-title"><i class="bi bi-clock-history me-2"></i>Recent Tasks</h3>
+            <a th:href="@{/tasks}" class="btn btn-outline-secondary btn-sm">View All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table task-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Assignee</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="task : ${recentTasks}" th:classappend="${task.overdue} ? 'overdue-row' : ''">
+                        <td>
+                            <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="task-link"
+                               th:text="${task.title}">Task Title</a>
+                        </td>
+                        <td>
+                            <span class="status-badge" th:classappend="${task.status.badgeClass}"
+                                  th:text="${task.status.label}">Status</span>
+                        </td>
+                        <td>
+                            <span class="priority-dot" th:classappend="${task.priority.badgeClass}"
+                                  th:text="${task.priority}">Priority</span>
+                        </td>
+                        <td>
+                            <span th:if="${task.assignee != null}" class="assignee-name"
+                                  th:text="${task.assignee.name}">Assignee</span>
+                            <span th:unless="${task.assignee != null}" class="text-muted">Unassigned</span>
+                        </td>
+                        <td>
+                            <span th:if="${task.dueDate != null}"
+                                  th:text="${#temporals.format(task.dueDate, 'dd MMM yyyy')}"
+                                  th:classappend="${task.overdue} ? 'text-danger fw-semibold' : ''">-</span>
+                            <span th:unless="${task.dueDate != null}" class="text-muted">—</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(recentTasks)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No tasks yet. <a th:href="@{/tasks/new}">Create your first task!</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script th:fragment="scripts">
+// Status Chart
+const statusData = /*[[${statusChart}]]*/ {};
+new Chart(document.getElementById('statusChart'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(statusData).map(k => k.replace('_', ' ')),
+        datasets: [{
+            label: 'Tasks',
+            data: Object.values(statusData),
+            backgroundColor: ['#6366f1','#f59e0b','#8b5cf6','#10b981'],
+            borderRadius: 8,
+            borderSkipped: false,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 }, beginAtZero: true }
+        }
+    }
+});
+
+// Priority Chart
+const priorityData = /*[[${priorityChart}]]*/ {};
+new Chart(document.getElementById('priorityChart'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(priorityData),
+        datasets: [{
+            data: Object.values(priorityData),
+            backgroundColor: ['#10b981','#6366f1','#f59e0b','#ef4444'],
+            borderWidth: 0, hoverOffset: 8,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 16 } }
+        },
+        cutout: '68%'
+    }
+});
+</script>
+</body>
+</html>
