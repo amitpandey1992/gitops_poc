@@ -63,3 +63,9 @@ variable "wif_pool_id" {
   type        = string
   default     = "github-actions-pool"
 }
+
+variable "wif_provider_id" {
+  description = "Workload Identity Federation Provider ID"
+  type        = string
+  default     = "github-actions-provider"
+}

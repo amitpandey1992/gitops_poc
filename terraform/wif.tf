@@ -5,7 +5,7 @@
 # ── 1. GitHub OIDC Provider ──────────────────────────────────────────────────
 resource "google_iam_workload_identity_pool_provider" "github_taskflow" {
   workload_identity_pool_id          = var.wif_pool_id
-  workload_identity_pool_provider_id = "github-taskflow-provider"
+  workload_identity_pool_provider_id = var.wif_provider_id
   project                            = var.project_id
   display_name                       = "GitHub Actions — gitops_poc"
 
