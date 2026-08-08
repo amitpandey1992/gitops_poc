@@ -20,11 +20,15 @@ terraform {
     }
   }
 
-  # Optional: Remote state in GCS (uncomment when ready)
-  # backend "gcs" {
-  #   bucket = "tf-state-project-616fef18"
-  #   prefix = "taskflow"
-  # }
+  # ☁️ Terraform Cloud (app.terraform.io) Configuration
+  # Replace 'YOUR_TF_CLOUD_ORG' with your actual Terraform Cloud Organization name
+  cloud {
+    organization = "YOUR_TF_CLOUD_ORG"
+
+    workspaces {
+      name = "gitops_poc"
+    }
+  }
 }
 
 provider "google" {
