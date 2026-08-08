@@ -15,7 +15,7 @@ output "cloud_sql_connection_name" {
 
 output "wif_provider_name" {
   description = "WIF Provider Resource Name for GitHub Actions"
-  value       = google_iam_workload_identity_pool_provider.github.name
+  value       = google_iam_workload_identity_pool_provider.github_taskflow.name
 }
 
 output "service_account_email" {
