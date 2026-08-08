@@ -16,8 +16,8 @@ env:
   WORKING_DIR: "./terraform"
   GCP_PROJECT: "project-616fef18-15b8-4d6c-8a2"
   GCP_REGION: "us-central1"
-  WIF_PROVIDER: ${{ secrets.TASKFLOW_WIF_PROVIDER || 'projects/project-616fef18-15b8-4d6c-8a2/locations/global/workloadIdentityPools/github-actions-pool/providers/github-taskflow-provider' }}
-  WIF_SA_EMAIL: ${{ secrets.TASKFLOW_WIF_SA_EMAIL || 'taskflow-sa@project-616fef18-15b8-4d6c-8a2.iam.gserviceaccount.com' }}
+  WIF_PROVIDER: ${{ secrets.TASKFLOW_WIF_PROVIDER || 'projects/project-616fef18-15b8-4d6c-8a2/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider' }}
+  WIF_SA_EMAIL: ${{ secrets.TASKFLOW_WIF_SA_EMAIL || 'github-actions-sa@project-616fef18-15b8-4d6c-8a2.iam.gserviceaccount.com' }}
 
 jobs:
   terraform:
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: write       # Required for WIF
+      id-token: write
       contents: read
       pull-requests: write
 
